@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/k1LoW/octocov/config"
@@ -39,6 +40,40 @@ func TestCollectReports(t *testing.T) {
 	got := ctr.reports
 	if want := 6; len(got) != want {
 		t.Errorf("got %v\nwant %v", len(got), want)
+	}
+}
+
+func TestCollectReportsReturnsInvalidReportError(t *testing.T) {
+	c := config.New()
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "broken.json"), []byte("{"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rd, err := local.New(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bd, err := local.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctr := New(&Config{
+		Repository:             "owner/repo",
+		Index:                  ".",
+		Wd:                     c.Wd(),
+		Badges:                 []datastore.Datastore{bd},
+		Reports:                []datastore.Datastore{rd},
+		CoverageColor:          c.CoverageColor,
+		CodeToTestRatioColor:   c.CodeToTestRatioColor,
+		TestExecutionTimeColor: c.TestExecutionTimeColor,
+	})
+
+	err = ctr.collectReports()
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !strings.Contains(err.Error(), "decode central report broken.json") {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }
 

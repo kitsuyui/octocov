@@ -102,15 +102,15 @@ func (c *Central) collectReports() error {
 			r := &report.Report{}
 			f, err := fsys.Open(path)
 			if err != nil {
-				return nil
+				return fmt.Errorf("open central report %s: %w", path, err)
 			}
 			defer f.Close()
 			b, err := io.ReadAll(f)
 			if err != nil {
-				return nil
+				return fmt.Errorf("read central report %s: %w", path, err)
 			}
 			if err := json.Unmarshal(b, r); err != nil {
-				return nil
+				return fmt.Errorf("decode central report %s: %w", path, err)
 			}
 			current, ok := rsMap[r.Repository]
 			if !ok {
