@@ -1,4 +1,7 @@
 name: tagpr
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -6,6 +9,8 @@ on:
 
 jobs:
   tagpr:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     outputs:
       tagpr-tag: ${{ steps.run-tagpr.outputs.tag }}
@@ -29,6 +34,8 @@ jobs:
     name: Release assets for maoOS
     needs: tagpr
     if: needs.tagpr.outputs.tagpr-tag != ''
+    permissions:
+      contents: write
     runs-on: macos-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,6 +69,8 @@ jobs:
     name: Release assets for Linux
     needs: tagpr
     if: needs.tagpr.outputs.tagpr-tag != ''
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Set up gcc-aarch64-linux-gnu
@@ -98,6 +107,8 @@ jobs:
     name: Release assets for Windows
     needs: tagpr
     if: needs.tagpr.outputs.tagpr-tag != ''
+    permissions:
+      contents: write
     runs-on: windows-latest
     steps:
       - name: Use LF
@@ -133,6 +144,9 @@ jobs:
   dockerimage:
     needs: tagpr
     if: needs.tagpr.outputs.tagpr-tag != ''
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -180,6 +194,8 @@ jobs:
 
   release:
     needs: [tagpr, darwin-assets, linux-assets, windows-assets, dockerimage]
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Release

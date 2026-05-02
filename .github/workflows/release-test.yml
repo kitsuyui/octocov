@@ -1,5 +1,8 @@
 name: release test
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -97,6 +100,7 @@ jobs:
   release-test-dockerimage:
     name: Release test for Docker image
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
