@@ -1,0 +1,4 @@
+# typos is a Source code spell checker
+# https://github.com/crate-ci/typos
+[default.extend-words]
+# Add repo-specific words only if needed by actual false positives.

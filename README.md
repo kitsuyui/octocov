@@ -28,7 +28,7 @@ For example, in case of Go language, add `-coverprofile=coverage.out` option as 
 $ go test ./... -coverprofile=coverage.out
 ```
 
-And generete `.octocov.yml` to your repository.
+And generate `.octocov.yml` to your repository.
 
 ``` console
 $ octocov init
